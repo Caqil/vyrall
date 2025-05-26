@@ -4,7 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/Caqil/vyrall/internal/models"
+	"vyrall/internal/models"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
