@@ -1,4 +1,4 @@
-module vyrall
+module github.com/Caqil/vyrall
 
 go 1.23.2
 
