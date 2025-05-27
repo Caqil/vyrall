@@ -12,7 +12,7 @@ type Story struct {
 	UserID          primitive.ObjectID   `bson:"user_id" json:"user_id"`
 	MediaFiles      []Media              `bson:"media_files" json:"media_files"`
 	Caption         string               `bson:"caption,omitempty" json:"caption,omitempty"`
-	Hashtags        []string             `bson:"hashtags,omitempty" json:"hashtags,omitempty"`
+	Hashtags        []string             `bson:"hashtags,omitempty" json:"tags,omitempty"`
 	MentionedUsers  []primitive.ObjectID `bson:"mentioned_users,omitempty" json:"mentioned_users,omitempty"`
 	Location        *Location            `bson:"location,omitempty" json:"location,omitempty"`
 	ViewerCount     int                  `bson:"viewer_count" json:"viewer_count"`

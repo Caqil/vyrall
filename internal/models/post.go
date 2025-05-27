@@ -12,9 +12,13 @@ type Post struct {
 	UserID         primitive.ObjectID   `bson:"user_id" json:"user_id"`
 	Content        string               `bson:"content" json:"content"`
 	MediaFiles     []Media              `bson:"media_files,omitempty" json:"media_files,omitempty"`
-	Hashtags       []string             `bson:"hashtags,omitempty" json:"hashtags,omitempty"`
+	Hashtags       []string             `bson:"hashtags,omitempty" json:"tags,omitempty"`
 	MentionedUsers []primitive.ObjectID `bson:"mentioned_users,omitempty" json:"mentioned_users,omitempty"`
 	Location       *Location            `bson:"location,omitempty" json:"location,omitempty"`
+	NSFW           bool                 `bson:"nsfw" json:"nsfw"`
+	EnableLikes    bool                 `bson:"enable_likes" json:"enable_likes"`
+	EnableSharing  bool                 `bson:"enable_sharing" json:"enable_sharing"`
+	PageID         *primitive.ObjectID  `bson:"page_id,omitempty" json:"page_id,omitempty"`
 	Privacy        string               `bson:"privacy" json:"privacy"` // public, friends, private
 	LikeCount      int                  `bson:"like_count" json:"like_count"`
 	CommentCount   int                  `bson:"comment_count" json:"comment_count"`

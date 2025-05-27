@@ -36,7 +36,7 @@ func (h *DraftHandler) CreateDraft(c *gin.Context) {
 	var req struct {
 		Content        string   `json:"content,omitempty"`
 		MediaIDs       []string `json:"media_ids,omitempty"`
-		Tags           []string `json:"tags,omitempty"`
+		Hashtags       []string `json:"tags,omitempty"`
 		MentionedUsers []string `json:"mentioned_users,omitempty"`
 		Location       *struct {
 			Name      string  `json:"name,omitempty"`
@@ -90,9 +90,12 @@ func (h *DraftHandler) CreateDraft(c *gin.Context) {
 	var location *models.Location
 	if req.Location != nil {
 		location = &models.Location{
-			Name:      req.Location.Name,
-			Latitude:  req.Location.Latitude,
-			Longitude: req.Location.Longitude,
+			Name: req.Location.Name,
+			Coordinates: models.GeoPoint{
+				Type: "Point",
+				// Note: GeoJSON uses [longitude, latitude] order
+				Coordinates: []float64{req.Location.Longitude, req.Location.Latitude},
+			},
 		}
 	}
 
@@ -135,7 +138,7 @@ func (h *DraftHandler) CreateDraft(c *gin.Context) {
 		userID.(primitive.ObjectID),
 		req.Content,
 		mediaIDs,
-		req.Tags,
+		req.Hashtags,
 		mentionedUserIDs,
 		location,
 		req.Privacy,
@@ -285,9 +288,12 @@ func (h *DraftHandler) UpdateDraft(c *gin.Context) {
 
 	if req.Location != nil {
 		location := &models.Location{
-			Name:      req.Location.Name,
-			Latitude:  req.Location.Latitude,
-			Longitude: req.Location.Longitude,
+			Name: req.Location.Name,
+			Coordinates: models.GeoPoint{
+				Type: "Point",
+				// Note: GeoJSON uses [longitude, latitude] order
+				Coordinates: []float64{req.Location.Longitude, req.Location.Latitude},
+			},
 		}
 		updates["location"] = location
 	}

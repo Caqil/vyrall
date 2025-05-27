@@ -41,7 +41,7 @@ func (h *CreateHandler) CreatePost(c *gin.Context) {
 			Latitude  float64 `json:"latitude"`
 			Longitude float64 `json:"longitude"`
 		} `json:"location,omitempty"`
-		Tags           []string `json:"tags,omitempty"`
+		Hashtags       []string `json:"tags,omitempty"`
 		MentionedUsers []string `json:"mentioned_users,omitempty"`
 		Privacy        string   `json:"privacy,omitempty"` // public, followers, private
 		AllowComments  bool     `json:"allow_comments"`
@@ -96,9 +96,11 @@ func (h *CreateHandler) CreatePost(c *gin.Context) {
 	var location *models.Location
 	if req.Location != nil {
 		location = &models.Location{
-			Name:      req.Location.Name,
-			Latitude:  req.Location.Latitude,
-			Longitude: req.Location.Longitude,
+			Name: req.Location.Name,
+			Coordinates: models.GeoPoint{
+				Type:        "Point",
+				Coordinates: []float64{req.Location.Longitude, req.Location.Latitude},
+			},
 		}
 	}
 
@@ -124,7 +126,7 @@ func (h *CreateHandler) CreatePost(c *gin.Context) {
 	post := &models.Post{
 		UserID:         userID.(primitive.ObjectID),
 		Content:        req.Content,
-		Tags:           req.Tags,
+		Hashtags:       req.Hashtags,
 		MentionedUsers: mentionedUserIDs,
 		Location:       location,
 		Privacy:        req.Privacy,
@@ -221,9 +223,12 @@ func (h *CreateHandler) CreatePoll(c *gin.Context) {
 	var location *models.Location
 	if req.Location != nil {
 		location = &models.Location{
-			Name:      req.Location.Name,
-			Latitude:  req.Location.Latitude,
-			Longitude: req.Location.Longitude,
+			Name: req.Location.Name,
+			Coordinates: models.GeoPoint{
+				Type: "Point",
+				// Note: GeoJSON uses [longitude, latitude] order
+				Coordinates: []float64{req.Location.Longitude, req.Location.Latitude},
+			},
 		}
 	}
 
@@ -313,9 +318,12 @@ func (h *CreateHandler) CreateSharedPost(c *gin.Context) {
 	var location *models.Location
 	if req.Location != nil {
 		location = &models.Location{
-			Name:      req.Location.Name,
-			Latitude:  req.Location.Latitude,
-			Longitude: req.Location.Longitude,
+			Name: req.Location.Name,
+			Coordinates: models.GeoPoint{
+				Type: "Point",
+				// Note: GeoJSON uses [longitude, latitude] order
+				Coordinates: []float64{req.Location.Longitude, req.Location.Latitude},
+			},
 		}
 	}
 

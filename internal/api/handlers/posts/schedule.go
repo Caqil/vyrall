@@ -109,9 +109,12 @@ func (h *ScheduleHandler) SchedulePost(c *gin.Context) {
 	var location *models.Location
 	if req.Location != nil {
 		location = &models.Location{
-			Name:      req.Location.Name,
-			Latitude:  req.Location.Latitude,
-			Longitude: req.Location.Longitude,
+			Name: req.Location.Name,
+			Coordinates: models.GeoPoint{
+				Type: "Point",
+				// Note: GeoJSON uses [longitude, latitude] order
+				Coordinates: []float64{req.Location.Longitude, req.Location.Latitude},
+			},
 		}
 	}
 
@@ -203,7 +206,7 @@ func (h *ScheduleHandler) UpdateScheduledPost(c *gin.Context) {
 		Content        string   `json:"content,omitempty"`
 		MediaIDs       []string `json:"media_ids,omitempty"`
 		ScheduledFor   string   `json:"scheduled_for,omitempty"` // ISO 8601 format
-		Tags           []string `json:"tags,omitempty"`
+		Hashtags       []string `json:"tags,omitempty"`
 		MentionedUsers []string `json:"mentioned_users,omitempty"`
 		Location       *struct {
 			Name      string  `json:"name,omitempty"`
@@ -221,7 +224,7 @@ func (h *ScheduleHandler) UpdateScheduledPost(c *gin.Context) {
 	}
 
 	// Check if the post exists, is scheduled, and belongs to the user
-	post, err := h.postService.GetScheduledPost(c.Request.Context(), postID, userID.(primitive.ObjectID))
+	_, err := h.postService.GetScheduledPost(c.Request.Context(), postID, userID.(primitive.ObjectID))
 	if err != nil {
 		response.NotFoundError(c, "Scheduled post not found")
 		return
@@ -262,8 +265,8 @@ func (h *ScheduleHandler) UpdateScheduledPost(c *gin.Context) {
 		updates["scheduled_for"] = scheduledTime
 	}
 
-	if req.Tags != nil {
-		updates["hashtags"] = req.Tags
+	if req.Hashtags != nil {
+		updates["hashtags"] = req.Hashtags
 	}
 
 	if req.MentionedUsers != nil {
@@ -280,9 +283,12 @@ func (h *ScheduleHandler) UpdateScheduledPost(c *gin.Context) {
 
 	if req.Location != nil {
 		location := &models.Location{
-			Name:      req.Location.Name,
-			Latitude:  req.Location.Latitude,
-			Longitude: req.Location.Longitude,
+			Name: req.Location.Name,
+			Coordinates: models.GeoPoint{
+				Type: "Point",
+				// Note: GeoJSON uses [longitude, latitude] order
+				Coordinates: []float64{req.Location.Longitude, req.Location.Latitude},
+			},
 		}
 		updates["location"] = location
 	}

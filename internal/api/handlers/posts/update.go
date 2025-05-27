@@ -44,7 +44,7 @@ func (h *UpdateHandler) UpdatePost(c *gin.Context) {
 	var req struct {
 		Content        string   `json:"content,omitempty"`
 		MediaIDs       []string `json:"media_ids,omitempty"`
-		Tags           []string `json:"tags,omitempty"`
+		Hashtags       []string `json:"tags,omitempty"`
 		MentionedUsers []string `json:"mentioned_users,omitempty"`
 		Location       *struct {
 			Name      string  `json:"name,omitempty"`
@@ -110,17 +110,20 @@ func (h *UpdateHandler) UpdatePost(c *gin.Context) {
 	if req.MediaIDs != nil {
 		updates["media_ids"] = mediaIDs
 	}
-	if req.Tags != nil {
-		updates["tags"] = req.Tags
+	if req.Hashtags != nil {
+		updates["hashtags"] = req.Hashtags // Now correctly matched
 	}
 	if req.MentionedUsers != nil {
 		updates["mentioned_users"] = mentionedUserIDs
 	}
 	if req.Location != nil {
 		location := &models.Location{
-			Name:      req.Location.Name,
-			Latitude:  req.Location.Latitude,
-			Longitude: req.Location.Longitude,
+			Name: req.Location.Name,
+			Coordinates: models.GeoPoint{
+				Type: "Point",
+				// Note: GeoJSON uses [longitude, latitude] order
+				Coordinates: []float64{req.Location.Longitude, req.Location.Latitude},
+			},
 		}
 		updates["location"] = location
 	}
@@ -270,9 +273,12 @@ func (h *UpdateHandler) UpdatePollPost(c *gin.Context) {
 	}
 	if req.Location != nil {
 		location := &models.Location{
-			Name:      req.Location.Name,
-			Latitude:  req.Location.Latitude,
-			Longitude: req.Location.Longitude,
+			Name: req.Location.Name,
+			Coordinates: models.GeoPoint{
+				Type: "Point",
+				// Note: GeoJSON uses [longitude, latitude] order
+				Coordinates: []float64{req.Location.Longitude, req.Location.Latitude},
+			},
 		}
 		updates["location"] = location
 	}
